@@ -1,6 +1,6 @@
 import { NextStudio } from 'next-sanity/studio';
 import config from '../../../../sanity.config';
-import StudioLayout from './layout';
+import StudioLayout from '../layout';
 
 export const dynamic = 'force-static';
 
