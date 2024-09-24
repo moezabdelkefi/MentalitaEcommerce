@@ -13,7 +13,7 @@ import { useStateContext } from "../../context/StateContext";
 const ProductDetails = ({ product, products }) => {
   const { image, name, details, price, sizes, colors } = product;
   const [index, setIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(sizes[0]); // Default to the first size
+  const [selectedSize, setSelectedSize] = useState(sizes[0].size); // Default to the first size
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
 
   const handleBuyNow = () => {
@@ -61,20 +61,24 @@ const ProductDetails = ({ product, products }) => {
           <div className="sizes">
             <h4>Sizes:</h4>
             <ul>
-              {sizes.map((size, index) => (
+              {sizes.map((sizeObj, index) => (
                 <li
                   key={index}
-                  className={selectedSize === size ? "selected-size" : ""}
-                  onClick={() => setSelectedSize(size)}
+                  className={selectedSize === sizeObj.size ? "selected-size" : ""}
+                  onClick={() => !sizeObj.outOfStock && setSelectedSize(sizeObj.size)}
+                  style={{ position: 'relative', cursor: sizeObj.outOfStock ? 'not-allowed' : 'pointer' }}
                 >
-                  {size}
+                  {sizeObj.size}
+                  {sizeObj.outOfStock && (
+                    <span style={{ color: 'red', marginLeft: '5px' }}>X</span>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
           <div className="colors">
             <div className="color-options">
-            <h4>Colors</h4>
+              <h4>Colors</h4>
               {colors.map((color, index) => (
                 <span
                   key={index}

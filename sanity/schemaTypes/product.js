@@ -41,10 +41,22 @@ export default {
       title: 'Sizes',
       type: 'array',
       of: [{ 
-        type: 'string',
-        validation: Rule => Rule.custom(size => {
-          return size === size.toUpperCase() ? true : 'Sizes must be uppercase';
-        })
+        type: 'object',
+        fields: [
+          {
+            name: 'size',
+            title: 'Size',
+            type: 'string',
+            validation: Rule => Rule.custom(size => {
+              return size === size.toUpperCase() ? true : 'Sizes must be uppercase';
+            })
+          },
+          {
+            name: 'outOfStock',
+            title: 'Out of Stock',
+            type: 'boolean'
+          }
+        ]
       }],
     },
     {
@@ -53,9 +65,9 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'color',  // Color field
+          type: 'color',
           options: {
-            disableAlpha: true, // Optional: Disable alpha channel
+            disableAlpha: true,
           },
         },
       ],

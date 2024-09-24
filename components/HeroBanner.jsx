@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 
 const HeroBanner = ({ heroBanner }) => {
   const settings = {
-    dots: true, // Set to true to enable dots
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
@@ -46,8 +46,7 @@ const HeroBanner = ({ heroBanner }) => {
         .slide-image {
           margin-top: 50px;
           width: 100%;
-          height: 100%;
-          object-fit: cover;
+          height: auto;
         }
         .slide-content {
           position: absolute;
@@ -100,6 +99,9 @@ const HeroBanner = ({ heroBanner }) => {
           }
           .slide-button {
             padding: 5px 10px;
+          }
+            .dots {
+            display: none;
           }
         }
       `}</style>
