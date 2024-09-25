@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
-import { client } from '../lib/client';
-import { Product, FooterBanner, HeroBanner, QuickView, Advantages, TextVideoSection } from '../components';
+import React from 'react';
+import { client } from '../sanity/lib/client';
+import HeroBanner from '../components/HeroBanner';
+import Product from '../components/Product';
+import QuickView from '../components/QuickView';
+import TextVideoSection from '../components/TextVideoSection';
+import { Advantages } from '@/components';
 
-const Home = ({ products, bannerData }) => {
-  const [quickViewProduct, setQuickViewProduct] = useState(null);
+export async function getStaticProps() {
+  const bannerQuery = `*[_type == "banner"]`;
+  const productsQuery = `*[_type == "product"]`;
+  const textVideoSectionQuery = `*[_type == "textVideoSection"]{
+    title,
+    text,
+    "videoUrl": video.asset->url
+  }`;
+
+  const bannerData = await client.fetch(bannerQuery);
+  const products = await client.fetch(productsQuery);
+  const textVideoSectionData = await client.fetch(textVideoSectionQuery);
+
+  return {
+    props: {
+      bannerData,
+      products,
+      textVideoSectionData: textVideoSectionData[0],
+    },
+  };
+}
+
+const HomePage = ({ bannerData, products, textVideoSectionData }) => {
+  const [quickViewProduct, setQuickViewProduct] = React.useState(null);
 
   const handleQuickView = (product) => {
     setQuickViewProduct(product);
@@ -28,22 +54,10 @@ const Home = ({ products, bannerData }) => {
       </div>
 
       {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
-      <TextVideoSection />
+      <TextVideoSection sectionData={textVideoSectionData} />
       <Advantages />
     </div>
   );
 };
 
-export const getServerSideProps = async () => {
-  const query = '*[_type == "product"][0...4]';
-  const products = await client.fetch(query);
-
-  const bannerQuery = '*[_type == "banner"]';
-  const bannerData = await client.fetch(bannerQuery);
-
-  return {
-    props: { products, bannerData }
-  }
-}
-
-export default Home;
+export default HomePage;

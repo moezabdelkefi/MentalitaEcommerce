@@ -911,7 +911,7 @@ span.text-red {
   stroke-linejoin: round;
 }
 
-.button-custom span {
+.button-custom span { 
   margin-left: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
