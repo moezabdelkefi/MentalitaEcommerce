@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Cart } from "./";
 import { useStateContext } from "../context/StateContext";
@@ -8,6 +8,8 @@ const Navbar = () => {
   const { showCart, setShowCart, totalQuantities } = useStateContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const searchFormRef = useRef(null);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -39,44 +41,74 @@ const Navbar = () => {
     event.preventDefault();
   };
 
+  const handleClickOutside = (event) => {
+    if (searchFormRef.current && !searchFormRef.current.contains(event.target)) {
+      setIsSearchVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       <div className="navbar-container">
         <div className="navbar-top">
           <p className="logo">
             <Link href="/">
-              <img src="/logoment.png" alt="Mentalita Logo" className="logo-image" />
+              <img
+                src="/logoment.png"
+                alt="Mentalita Logo"
+                className="logo-image"
+              />
             </Link>
           </p>
-
-          <form className="search-form" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Search for products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            {searchResults.length > 0 && (
-              <div className="search-results">
-                {searchResults.map((product) => (
-                  <Link
-                    key={product._id}
-                    href={`/product/${product.slug.current}`}
-                    legacyBehavior
-                  >
-                    <a className="search-result-item" onClick={handleProductClick}>
-                      <img src={urlFor(product.image[0])} alt={product.name} />
-                      <div>
-                        <p>{product.name}</p>
-                      </div>
-                    </a>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </form>
-
+          <div className="center-container">
+            <Link href="/products">Products</Link>
+            <div className="search-bar-container">
+              <form className="search-form" onSubmit={handleSearch} ref={searchFormRef}>
+                <input
+                  type="text"
+                  placeholder="Search for products..."
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setIsSearchVisible(true);
+                  }}
+                  className="search-input"
+                />
+                {isSearchVisible && searchResults.length > 0 && (
+                  <div className="search-results">
+                    {searchResults.map((product) => (
+                      <Link
+                        key={product._id}
+                        href={`/product/${product.slug.current}`}
+                        legacyBehavior
+                      >
+                        <a
+                          className="search-result-item"
+                          onClick={handleProductClick}
+                        >
+                          <img
+                            src={urlFor(product.image[0])}
+                            alt={product.name}
+                            className="imagesearch"
+                          />
+                          <div>
+                            <p>{product.name}</p>
+                          </div>
+                        </a>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
           <button
             type="button"
             className="button-custom"
@@ -105,6 +137,10 @@ const Navbar = () => {
           align-items: center;
         }
 
+        .imagesearch {
+          object-fit: cover;
+        }
+
         .navbar-top {
           display: flex;
           justify-content: space-between;
@@ -113,18 +149,27 @@ const Navbar = () => {
           padding: 10px;
         }
 
+        .center-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: 1;
+          margin: 0 20px;
+        }
+
+        .search-bar-container {
+          margin-left: 20px; /* Add space between product link and search bar */
+        }
+
         .search-form {
           display: flex;
           align-items: center;
           position: relative;
-          flex: 1;
-          margin: 0 30rem;
         }
 
         .search-input {
           padding: 5px;
           margin-right: 5px;
-          flex: 1;
           height: 36px;
         }
 

@@ -87,6 +87,7 @@ const TextVideoSection = () => {
           font-size: 2rem;
           color: #333;
           margin-bottom: 15px;
+          color: #324d67;
         }
 
         p {

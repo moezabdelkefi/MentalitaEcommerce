@@ -9,7 +9,7 @@ import AboutUs from '../components/AboutUs';
 
 export async function getStaticProps() {
   const bannerQuery = `*[_type == "banner"]`;
-  const productsQuery = `*[_type == "product"]`;
+  const productsQuery = `*[_type == "product"] | order(_createdAt desc)`;
   const textVideoSectionQuery = `*[_type == "textVideoSection"]{
     title,
     text,
@@ -52,7 +52,7 @@ const HomePage = ({ bannerData, products, textVideoSectionData, aboutUsData }) =
       </div>
 
       <div className="products-container">
-        {products?.map((product) => (
+        {products?.slice(0, 4).map((product) => (
           <Product key={product._id} product={product} onQuickView={handleQuickView} />
         ))}
       </div>

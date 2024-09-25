@@ -822,6 +822,7 @@ span.text-red {
   background-color: #f9f9f9;
   text-align: center;
   margin-bottom: 40px;
+  border-radius: 10px;
 }
 
 .title {
@@ -946,4 +947,133 @@ span.text-red {
   .text {
     margin-right: 5px;
   }
+}
+
+/* ProductsPage.css */
+
+.page-container {
+  display: flex;
+  flex-direction: row;
+  padding: 24px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    flex-direction: column;
+    padding: 16px;
+  }
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+  padding-right: 20px;
+  border-right: 1px solid grey;
+  transition: transform 0.3s ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: white;
+    padding: 20px;
+    border-right: 1px solid grey;
+    z-index: 100;
+    transform: translateX(-100%);
+  }
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.close-button {
+  display: none;
+  font-size: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #000;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .close-button {
+    display: block;
+  }
+}
+
+.products-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 16px;
+  padding-left: 20px;
+  width: 80%;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .products-container {
+    width: 100%;
+    padding-left: 0;
+    flex-wrap: wrap;
+
+  }
+}
+
+.filter-toggle-button {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .filter-toggle-button {
+    display: inline-block;
+    background-color: #f7ab1e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.separator {
+  margin: 16px 0;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-button {
+  padding: 8px;
+  border: 1px solid grey;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.color-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid black;
 }

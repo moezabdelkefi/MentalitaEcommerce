@@ -26,7 +26,7 @@ const AboutUs = ({ title, description, description1, image }) => {
           background-color: #f9f9f9;
           border-radius: 10px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          margin: 20px;
+          margin: 10px;
         }
         .about-image {
           max-width: 100%;
@@ -39,8 +39,8 @@ const AboutUs = ({ title, description, description1, image }) => {
           text-align: left;
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-          justify-content: flex-start;
+          justify-content: center;
+          padding-left: 20px;
         }
         .about-us h2 {
           margin: 0 0 10px;
@@ -55,17 +55,15 @@ const AboutUs = ({ title, description, description1, image }) => {
         @media (min-width: 768px) {
           .about-us {
             flex-direction: row;
-            align-items: flex-start;
+            align-items: center;
           }
           .about-image {
-            width: 40%; /* Changed from 50% to 40% */
+            width: 40%; /* Adjust image width */
             margin: 0 20px 0 0;
           }
           .about-us .content {
             flex: 1;
             text-align: left;
-            justify-content: flex-start;
-            align-items: flex-start;
           }
         }
       `}</style>
