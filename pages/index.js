@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { client } from '../lib/client';
-import { Product, FooterBanner, HeroBanner, QuickView, Advantages } from '../components';
+import { Product, FooterBanner, HeroBanner, QuickView, Advantages, TextVideoSection } from '../components';
 
 const Home = ({ products, bannerData }) => {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -28,6 +28,7 @@ const Home = ({ products, bannerData }) => {
       </div>
 
       {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
+      <TextVideoSection />
       <Advantages />
     </div>
   );

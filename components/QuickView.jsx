@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { AiOutlineClose } from 'react-icons/ai';
-import { urlFor } from '../lib/client';
-import styled from 'styled-components';
+import React, { useState, useEffect, useRef } from "react";
+import { AiOutlineClose } from "react-icons/ai";
+import { urlFor } from "../lib/client";
+import styled from "styled-components";
 
 const QuickView = ({ product, onClose }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes[0].size);
@@ -16,14 +16,17 @@ const QuickView = ({ product, onClose }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
         handleClose();
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -43,7 +46,10 @@ const QuickView = ({ product, onClose }) => {
         <Content>
           <ImageSection>
             <BigImageContainer>
-              <BigImage src={urlFor(product.image && product.image[index])} alt={product.name} />
+              <BigImage
+                src={urlFor(product.image && product.image[index])}
+                alt={product.name}
+              />
             </BigImageContainer>
             <SmallImagesContainer>
               {product.image?.map((item, i) => (
@@ -59,7 +65,7 @@ const QuickView = ({ product, onClose }) => {
           <Details>
             <Title>{product.name}</Title>
             <Description>{product.details}</Description>
-            <hr className="hr" />
+            <hr />
             <Sizes>
               <h4>Sizes:</h4>
               <SizeList>
@@ -67,12 +73,17 @@ const QuickView = ({ product, onClose }) => {
                   <SizeItem
                     key={index}
                     className={selectedSize === sizeObj.size ? "selected" : ""}
-                    onClick={() => !sizeObj.outOfStock && setSelectedSize(sizeObj.size)}
-                    style={{ position: 'relative', cursor: sizeObj.outOfStock ? 'not-allowed' : 'pointer' }}
+                    onClick={() =>
+                      !sizeObj.outOfStock && setSelectedSize(sizeObj.size)
+                    }
+                    style={{
+                      position: "relative",
+                      cursor: sizeObj.outOfStock ? "not-allowed" : "pointer",
+                    }}
                   >
                     {sizeObj.size}
                     {sizeObj.outOfStock && (
-                      <span style={{ color: 'red', marginLeft: '5px' }}>X</span>
+                      <span style={{ color: "red", marginLeft: "5px" }}>X</span>
                     )}
                   </SizeItem>
                 ))}
@@ -131,7 +142,7 @@ const Container = styled.div`
   position: relative;
   max-height: 80%;
   overflow-y: auto;
-  transform: ${({ isVisible }) => (isVisible ? 'scale(1)' : 'scale(0.9)')};
+  transform: ${({ isVisible }) => (isVisible ? "scale(1)" : "scale(0.9)")};
   transition: transform 0.3s ease;
 
   @media (max-width: 768px) {
@@ -261,7 +272,7 @@ const Sizes = styled.div`
   margin-bottom: 10px;
 
   h4 {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 
     @media (max-width: 480px) {
       font-size: 16px;
@@ -313,9 +324,10 @@ const ColorOptions = styled.div`
 `;
 
 const ColorOption = styled.span`
-  width: 15px;
-  height: 15px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  border: 1px solid #000;
   cursor: pointer;
 
   @media (max-width: 480px) {

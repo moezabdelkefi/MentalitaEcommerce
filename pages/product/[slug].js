@@ -13,7 +13,7 @@ import { useStateContext } from "../../context/StateContext";
 const ProductDetails = ({ product, products }) => {
   const { image, name, details, price, sizes, colors } = product;
   const [index, setIndex] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(sizes[0].size); // Default to the first size
+  const [selectedSize, setSelectedSize] = useState(sizes[0].size);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
 
   const handleBuyNow = () => {

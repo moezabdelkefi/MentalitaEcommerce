@@ -8,10 +8,39 @@ import {
 } from "react-icons/ai";
 import { TiDeleteOutline } from "react-icons/ti";
 import toast from "react-hot-toast";
+import styled from "styled-components";
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
 import getStripe from "../lib/getStripe";
+
+const CartWrapper = styled.div`
+  width: 100vw;
+  background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 100;
+  transition: all 1s ease-in-out;
+`;
+
+const CartContainer = styled.div`
+  height: 100vh;
+  width: 600px;
+  background-color: white;
+  float: right;
+  padding: 40px 10px;
+  position: relative;
+  transition: transform 0.3s ease-in-out;
+
+  @media (max-width: 768px) {
+    width: 80%;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+`;
 
 const Cart = () => {
   const cartRef = useRef();
@@ -44,11 +73,8 @@ const Cart = () => {
     stripe.redirectToCheckout({ sessionId: data.id });
   };
 
-  // Close cart when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Log to see if the click is detected
-      console.log("Clicked outside:", cartRef.current.contains(event.target), event.target);
       if (cartRef.current && !cartRef.current.contains(event.target)) {
         setShowCart(false);
       }
@@ -62,8 +88,8 @@ const Cart = () => {
   }, [setShowCart]);
 
   return (
-    <div className="cart-wrapper" ref={cartRef}>
-      <div className="cart-container">
+    <CartWrapper ref={cartRef}>
+      <CartContainer>
         <button
           type="button"
           className="cart-heading"
@@ -147,13 +173,13 @@ const Cart = () => {
             </div>
             <div className="btn-container">
               <button type="button" className="btn" onClick={handleCheckout}>
-                Pay with Stripe
+                Proceed to Checkout
               </button>
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </CartContainer>
+    </CartWrapper>
   );
 };
 
