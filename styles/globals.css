@@ -918,3 +918,32 @@ span.text-red {
   color: white;
 }
 
+.banner {
+  background-color: #f02d34;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .banner {
+    font-size: 16px;
+    padding: 8px 0;
+  }
+}
+
+.text {
+  margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+  .text {
+    margin-right: 5px;
+  }
+}

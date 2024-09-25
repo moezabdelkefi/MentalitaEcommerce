@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { client } from '../sanity/lib/client';
 import HeroBanner from '../components/HeroBanner';
 import Product from '../components/Product';
 import QuickView from '../components/QuickView';
 import TextVideoSection from '../components/TextVideoSection';
 import { Advantages } from '@/components';
+import AboutUs from '../components/AboutUs';
 
 export async function getStaticProps() {
   const bannerQuery = `*[_type == "banner"]`;
@@ -14,22 +15,25 @@ export async function getStaticProps() {
     text,
     "videoUrl": video.asset->url
   }`;
+  const aboutUsQuery = `*[_type == "aboutUs"]{title, description, image}`;
 
   const bannerData = await client.fetch(bannerQuery);
   const products = await client.fetch(productsQuery);
   const textVideoSectionData = await client.fetch(textVideoSectionQuery);
+  const aboutUsData = await client.fetch(aboutUsQuery);
 
   return {
     props: {
       bannerData,
       products,
-      textVideoSectionData: textVideoSectionData[0],
+      textVideoSectionData,
+      aboutUsData: aboutUsData[0] || null, // Assuming there's only one "About Us" document
     },
   };
 }
 
-const HomePage = ({ bannerData, products, textVideoSectionData }) => {
-  const [quickViewProduct, setQuickViewProduct] = React.useState(null);
+const HomePage = ({ bannerData, products, textVideoSectionData, aboutUsData }) => {
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const handleQuickView = (product) => {
     setQuickViewProduct(product);
@@ -55,6 +59,7 @@ const HomePage = ({ bannerData, products, textVideoSectionData }) => {
 
       {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
       <TextVideoSection sectionData={textVideoSectionData} />
+      {aboutUsData && <AboutUs {...aboutUsData} />}
       <Advantages />
     </div>
   );

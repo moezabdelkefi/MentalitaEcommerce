@@ -8,3 +8,5 @@ export { default as Cart } from './Cart';
 export { default as QuickView } from './QuickView';
 export { default as Advantages } from './Advantages';
 export { default as TextVideoSection } from './TextVideoSection';
+export { default as TopBanner } from './TopBanner';
+export { default as AboutUs } from './AboutUs';
