@@ -16,6 +16,7 @@
     "@sanity/image-url": "^1.0.2",
     "@sanity/vision": "^3.57.4",
     "@stripe/stripe-js": "^4.5.0",
+    "@vercel/speed-insights": "^1.0.12",
     "canvas-confetti": "^1.9.3",
     "next": "14.2.13",
     "next-sanity": "^9.5.0",

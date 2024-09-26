@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { client } from '../lib/client';
-import Product from '../components/Product';
-import QuickView from '../components/QuickView';
+import React, { useState, useEffect, useRef } from "react";
+import { client } from "../lib/client";
+import Product from "../components/Product";
+import QuickView from "../components/QuickView";
 
 const ProductsPage = ({ products }) => {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  const sidebarRef = useRef(null);
 
   const handleColorChange = (color) => {
     setSelectedColors((prevColors) =>
@@ -33,6 +35,32 @@ const ProductsPage = ({ products }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isSidebarOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
+        closeSidebar();
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSidebarOpen]);
+
   const filteredProducts = products.filter((product) => {
     const matchesColor =
       selectedColors.length === 0 ||
@@ -43,90 +71,138 @@ const ProductsPage = ({ products }) => {
     return matchesColor && matchesSize;
   });
 
-  // Get unique sizes
   const uniqueSizes = [
-    ...new Set(products.flatMap((product) => product.sizes.map((sizeObj) => sizeObj.size))),
+    ...new Set(
+      products.flatMap((product) =>
+        product.sizes.map((sizeObj) => sizeObj.size)
+      )
+    ),
   ];
 
-  // Get unique colors
   const uniqueColors = [
-    ...new Set(products.flatMap((product) => product.colors.map((color) => color.hex))),
+    ...new Set(
+      products.flatMap((product) => product.colors.map((color) => color.hex))
+    ),
   ];
 
   return (
     <div className="page-container">
-      {/* Filter Toggle Button for Mobile */}
       <button className="filter-toggle-button" onClick={toggleSidebar}>
-        {isSidebarOpen ? 'Close Filters' : 'Open Filters'}
+        {isSidebarOpen ? (
+          <>
+            Filters
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon-plus"
+            >
+              <line x1="12" x2="12" y1="5" y2="19"></line>
+              <line x1="5" x2="19" y1="12" y2="12"></line>
+            </svg>
+          </>
+        ) : (
+          <>
+            Filters
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="icon-plus"
+            >
+              <line x1="12" x2="12" y1="5" y2="19"></line>
+              <line x1="5" x2="19" y1="12" y2="12"></line>
+            </svg>
+          </>
+        )}
       </button>
 
-      {/* Sidebar for filters */}
-      <div className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
-        <button className="close-button" onClick={toggleSidebar}>&times;</button> {/* Close button */}
-        <div className="filter-section">
-          <h3 className="filter-title">Sizes</h3>
-          <hr className="separator" />
-          <div className="filter-options">
-            {uniqueSizes.map((size, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`filter-button ${selectedSizes.includes(size) ? 'selected' : ''}`}
-                onClick={() => handleSizeChange(size)}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="filter-section">
-          <h3 className="filter-title">Colors</h3>
-          <hr className="separator" />
-          <div className="filter-options">
-            {uniqueColors.map((color, index) => (
-              <button
-                key={index}
-                type="button"
-                className={`filter-button color-button ${selectedColors.includes(color) ? 'selected' : ''}`}
-                style={{ backgroundColor: color }}
-                onClick={() => handleColorChange(color)}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
+      <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+  <div className="close-button-container">
+    <button className="close-button" onClick={toggleSidebar}>
+      &times;
+    </button>
+  </div>
+  <div className="filter-section">
+    <h3 className="filter-title">Sizes</h3>
+    <hr className="separator" />
+    <div className="filter-options">
+      {uniqueSizes.map((size, index) => (
+        <button
+          key={index}
+          type="button"
+          className={`filter-button ${selectedSizes.includes(size) ? "selected" : ""}`}
+          onClick={() => handleSizeChange(size)}
+        >
+          {size}
+        </button>
+      ))}
+    </div>
+  </div>
+  <div className="filter-section">
+    <h3 className="filter-title">Colors</h3>
+    <hr className="separator" />
+    <div className="filter-options">
+      {uniqueColors.map((color, index) => (
+        <button
+          key={index}
+          type="button"
+          className={`filter-button color-button ${selectedColors.includes(color) ? "selected" : ""}`}
+          style={{ backgroundColor: color }}
+          onClick={() => handleColorChange(color)}
+        />
+      ))}
+    </div>
+  </div>
+</div>
 
-      {/* Products Container */}
+
       <div className="products-container">
         {filteredProducts.map((product) => (
-          <Product key={product._id} product={product} onQuickView={handleQuickView} />
+          <Product
+            key={product._id}
+            product={product}
+            onQuickView={handleQuickView}
+          />
         ))}
       </div>
 
-      {/* QuickView Modal */}
       {quickViewProduct && (
-        <QuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
+        <QuickView
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+        />
       )}
 
       <style jsx>{`
         .products-container {
           display: flex;
-          flex-wrap: wrap; /* Allows wrapping to the next line */
+          flex-wrap: wrap;
           gap: 16px;
-          padding-left: 20px;
           width: 80%;
-          margin: 0 auto; /* Centers the container */
-          justify-content: center; /* Centers the items within the container */
+          margin: 0 auto;
+          justify-content: center;
         }
         .filter-button.selected {
-          border: 2px solid #000; /* Highlight selected filter buttons */
+          border: 2px solid #000;
         }
       `}</style>
     </div>
   );
 };
 
-// Fetch products data (example)
 export const getStaticProps = async () => {
   const productsQuery = `*[_type == "product"]`;
   const products = await client.fetch(productsQuery);

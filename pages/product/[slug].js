@@ -7,7 +7,7 @@ import {
 } from "react-icons/ai";
 
 import { client, urlFor } from "../../lib/client";
-import { Product } from "../../components";
+import { Product, QuickView } from "../../components";
 import { useStateContext } from "../../context/StateContext";
 
 const ProductDetails = ({ product, products }) => {
@@ -15,10 +15,19 @@ const ProductDetails = ({ product, products }) => {
   const [index, setIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState(sizes[0].size);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const handleBuyNow = () => {
     onAdd(product, qty, selectedSize);
     setShowCart(true);
+  };
+
+  const handleQuickView = (product) => {
+    setQuickViewProduct(product);
+  };
+
+  const closeQuickView = () => {
+    setQuickViewProduct(null);
   };
 
   return (
@@ -64,13 +73,20 @@ const ProductDetails = ({ product, products }) => {
               {sizes.map((sizeObj, index) => (
                 <li
                   key={index}
-                  className={selectedSize === sizeObj.size ? "selected-size" : ""}
-                  onClick={() => !sizeObj.outOfStock && setSelectedSize(sizeObj.size)}
-                  style={{ position: 'relative', cursor: sizeObj.outOfStock ? 'not-allowed' : 'pointer' }}
+                  className={
+                    selectedSize === sizeObj.size ? "selected-size" : ""
+                  }
+                  onClick={() =>
+                    !sizeObj.outOfStock && setSelectedSize(sizeObj.size)
+                  }
+                  style={{
+                    position: "relative",
+                    cursor: sizeObj.outOfStock ? "not-allowed" : "pointer",
+                  }}
                 >
                   {sizeObj.size}
                   {sizeObj.outOfStock && (
-                    <span style={{ color: 'red', marginLeft: '5px' }}>X</span>
+                    <span style={{ color: "red", marginLeft: "5px" }}>X</span>
                   )}
                 </li>
               ))}
@@ -117,12 +133,19 @@ const ProductDetails = ({ product, products }) => {
         </div>
       </div>
 
+      {quickViewProduct && (
+        <QuickView product={quickViewProduct} onClose={closeQuickView} />
+      )}
       <div className="maylike-products-wrapper">
         <h2>Related Items </h2>
         <div className="marquee">
           <div className="maylike-products-container track">
             {products.map((item) => (
-              <Product key={item._id} product={item} />
+              <Product
+                key={item._id}
+                product={item}
+                onQuickView={handleQuickView}
+              />
             ))}
           </div>
         </div>
