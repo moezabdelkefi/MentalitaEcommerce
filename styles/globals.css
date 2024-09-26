@@ -661,8 +661,8 @@ span.text-red {
     flex-wrap: wrap;
   }
   .product-detail-container .product-detail-image {
-    width: 350px;
-    height: 350px;
+    width: 281px;
+    height: 300px;
   }
   .cart-container {
     width: 415px;
@@ -682,10 +682,10 @@ span.text-red {
     height: 25%;
   }
   .buttons .add-to-cart {
-    width: 150px;
+    width: 115px;
   }
   .buttons .buy-now {
-    width: 150px;
+    width: 115px;
   }
   .product-detail-container {
     margin: 20px;
