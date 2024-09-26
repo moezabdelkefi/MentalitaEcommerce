@@ -42,15 +42,18 @@ const Navbar = () => {
   };
 
   const handleClickOutside = (event) => {
-    if (searchFormRef.current && !searchFormRef.current.contains(event.target)) {
+    if (
+      searchFormRef.current &&
+      !searchFormRef.current.contains(event.target)
+    ) {
       setIsSearchVisible(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -68,9 +71,15 @@ const Navbar = () => {
             </Link>
           </p>
           <div className="center-container">
-            <Link href="/products">Products</Link>
+            <Link href="/products" legacyBehavior>
+              <a className="custom-link">Products</a>
+            </Link>
             <div className="search-bar-container">
-              <form className="search-form" onSubmit={handleSearch} ref={searchFormRef}>
+              <form
+                className="search-form"
+                onSubmit={handleSearch}
+                ref={searchFormRef}
+              >
                 <input
                   type="text"
                   placeholder="Search for products..."
@@ -201,6 +210,12 @@ const Navbar = () => {
           width: 50px;
           height: 50px;
           margin-right: 10px;
+        }
+
+        .custom-link {
+          font-size: 18px;
+          color: #324d67;
+          font-weight: 600;
         }
 
         @media (max-width: 768px) {

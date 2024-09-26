@@ -3,9 +3,10 @@ import { client } from "../lib/client";
 import Product from "../components/Product";
 import QuickView from "../components/QuickView";
 
-const ProductsPage = ({ products }) => {
+const ProductsPage = ({ products, categories }) => {
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -24,6 +25,14 @@ const ProductsPage = ({ products }) => {
       prevSizes.includes(size)
         ? prevSizes.filter((s) => s !== size)
         : [...prevSizes, size]
+    );
+  };
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prevCategories) =>
+      prevCategories.includes(category)
+        ? prevCategories.filter((c) => c !== category)
+        : [...prevCategories, category]
     );
   };
 
@@ -68,7 +77,10 @@ const ProductsPage = ({ products }) => {
     const matchesSize =
       selectedSizes.length === 0 ||
       product.sizes.some((sizeObj) => selectedSizes.includes(sizeObj.size));
-    return matchesColor && matchesSize;
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.includes(product.category);
+    return matchesColor && matchesSize && matchesCategory;
   });
 
   const uniqueSizes = [
@@ -130,44 +142,59 @@ const ProductsPage = ({ products }) => {
       </button>
 
       <div ref={sidebarRef} className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-  <div className="close-button-container">
-    <button className="close-button" onClick={toggleSidebar}>
-      &times;
-    </button>
-  </div>
-  <div className="filter-section">
-    <h3 className="filter-title">Sizes</h3>
-    <hr className="separator" />
-    <div className="filter-options">
-      {uniqueSizes.map((size, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`filter-button ${selectedSizes.includes(size) ? "selected" : ""}`}
-          onClick={() => handleSizeChange(size)}
-        >
-          {size}
-        </button>
-      ))}
-    </div>
-  </div>
-  <div className="filter-section">
-    <h3 className="filter-title">Colors</h3>
-    <hr className="separator" />
-    <div className="filter-options">
-      {uniqueColors.map((color, index) => (
-        <button
-          key={index}
-          type="button"
-          className={`filter-button color-button ${selectedColors.includes(color) ? "selected" : ""}`}
-          style={{ backgroundColor: color }}
-          onClick={() => handleColorChange(color)}
-        />
-      ))}
-    </div>
-  </div>
-</div>
-
+        <div className="close-button-container">
+          <button className="close-button" onClick={toggleSidebar}>
+            &times;
+          </button>
+        </div>
+        <div className="filter-section">
+          <h3 className="filter-title">Sizes</h3>
+          <hr className="separator" />
+          <div className="filter-options">
+            {uniqueSizes.map((size, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`filter-button ${selectedSizes.includes(size) ? "selected" : ""}`}
+                onClick={() => handleSizeChange(size)}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="filter-section">
+          <h3 className="filter-title">Colors</h3>
+          <hr className="separator" />
+          <div className="filter-options">
+            {uniqueColors.map((color, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`filter-button color-button ${selectedColors.includes(color) ? "selected" : ""}`}
+                style={{ backgroundColor: color }}
+                onClick={() => handleColorChange(color)}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="filter-section">
+          <h3 className="filter-title">Categories</h3>
+          <hr className="separator" />
+          <div className="filter-options">
+            {categories && categories.map((category, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`filter-button ${selectedCategories.includes(category) ? "selected" : ""}`}
+                onClick={() => handleCategoryChange(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <div className="products-container">
         {filteredProducts.map((product) => (
@@ -207,8 +234,12 @@ export const getStaticProps = async () => {
   const productsQuery = `*[_type == "product"]`;
   const products = await client.fetch(productsQuery);
 
+  const categoriesQuery = `*[_type == "product"]{category}`;
+  const categoriesData = await client.fetch(categoriesQuery);
+  const categories = [...new Set(categoriesData.map((item) => item.category))];
+
   return {
-    props: { products },
+    props: { products, categories },
   };
 };
 

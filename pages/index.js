@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { client } from '../sanity/lib/client';
 import HeroBanner from '../components/HeroBanner';
 import Product from '../components/Product';
@@ -6,6 +6,8 @@ import QuickView from '../components/QuickView';
 import TextVideoSection from '../components/TextVideoSection';
 import { Advantages } from '@/components';
 import AboutUs from '../components/AboutUs';
+import Link from 'next/link';
+import TextVideoSection1 from '@/components/TextVideoSection1';
 
 export async function getStaticProps() {
   const bannerQuery = `*[_type == "banner"]`;
@@ -27,7 +29,7 @@ export async function getStaticProps() {
       bannerData,
       products,
       textVideoSectionData,
-      aboutUsData: aboutUsData[0] || null, // Assuming there's only one "About Us" document
+      aboutUsData: aboutUsData[0] || null,
     },
   };
 }
@@ -50,17 +52,48 @@ const HomePage = ({ bannerData, products, textVideoSectionData, aboutUsData }) =
         <h2>Latest Products</h2>
         <p>Discover our latest collection of products, carefully curated to meet your needs and preferences.</p>
       </div>
+      <div className="browse-all-container">
+        <Link href="/products">
+          <p className="browse-all-button">Browse All Products</p>
+        </Link>
+      </div>
 
       <div className="products-container">
         {products?.slice(0, 4).map((product) => (
           <Product key={product._id} product={product} onQuickView={handleQuickView} />
         ))}
       </div>
-
       {quickViewProduct && <QuickView product={quickViewProduct} onClose={closeQuickView} />}
       <TextVideoSection sectionData={textVideoSectionData} />
+
       {aboutUsData && <AboutUs {...aboutUsData} />}
+      <TextVideoSection1 sectionData={textVideoSectionData} />
       <Advantages />
+
+      <style jsx>{`
+        .browse-all-container {
+          display: flex;
+          justify-content: center;
+          margin-top: 20px;
+        }
+
+        .browse-all-button {
+          padding: 10px 20px;
+          font-size: 1rem;
+          color: #324d67;
+          background-color: transparent;
+          border: 2px solid #324d67;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: background-color 0.3s, color 0.3s;
+          margin-bottom: 1rem;
+        }
+
+        .browse-all-button:hover {
+          background-color: #324d67;
+          color: white;
+        }
+      `}</style>
     </div>
   );
 };

@@ -202,7 +202,7 @@ span.text-red {
 }
 .products-heading {
   text-align: center;
-  margin: 40px 0px;
+  margin: 20px 0px;
   color: #324d67;
 }
 .products-heading h2 {
@@ -300,10 +300,14 @@ span.text-red {
 
 .cart-heading .heading {
   margin-left: 10px;
+  font-size: 1rem;
+  font-weight: 900;
 }
 .cart-num-items {
   margin-left: 10px;
   color: #2c0287;
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 .empty-cart {
   margin: 40px;
@@ -1099,3 +1103,17 @@ span.text-red {
   border-radius: 50%;
   border: 1px solid black;
 }
+
+.category {
+  margin-top: 10px;
+}
+
+.category p {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  font-weight: bold;
+  color: #333;
+}
+

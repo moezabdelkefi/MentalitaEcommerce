@@ -13,5 +13,11 @@ export default {
         title: 'Discount',
         type: 'string',
       },
+      {
+        name: 'isVisible',
+        title: 'Is Visible',
+        type: 'boolean',
+        initialValue: true,
+      },
     ],
   };

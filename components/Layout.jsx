@@ -1,9 +1,9 @@
-import React from 'react';
-import Head from 'next/head';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import TopBanner from './TopBanner';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import React from "react";
+import Head from "next/head";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import TopBanner from "./TopBanner";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const Layout = ({ children, topBannerData }) => {
   return (
@@ -13,12 +13,16 @@ const Layout = ({ children, topBannerData }) => {
         <title>MENTALITA</title>
       </Head>
       <header>
-        {topBannerData && <TopBanner text={topBannerData.text} discount={topBannerData.discount} />}
+        {topBannerData && (
+          <TopBanner
+            text={topBannerData.text}
+            discount={topBannerData.discount}
+            isVisible={topBannerData.isVisible}
+          />
+        )}
         <Navbar />
       </header>
-      <main className="main-container">
-        {children}
-      </main>
+      <main className="main-container">{children}</main>
       <footer>
         <Footer />
       </footer>

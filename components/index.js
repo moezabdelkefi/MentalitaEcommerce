@@ -10,3 +10,4 @@ export { default as Advantages } from './Advantages';
 export { default as TextVideoSection } from './TextVideoSection';
 export { default as TopBanner } from './TopBanner';
 export { default as AboutUs } from './AboutUs';
+export { default as TextVideoSection2 } from './TextVideoSection1';

@@ -29,7 +29,7 @@ const CartContainer = styled.div`
   width: 600px;
   background-color: white;
   float: right;
-  padding: 40px 10px;
+  padding: 20px 10px;
   position: relative;
   transition: transform 0.3s ease-in-out;
 

@@ -9,9 +9,10 @@ import {
 import { client, urlFor } from "../../lib/client";
 import { Product, QuickView } from "../../components";
 import { useStateContext } from "../../context/StateContext";
+import Link from "next/link";
 
 const ProductDetails = ({ product, products }) => {
-  const { image, name, details, price, sizes, colors } = product;
+  const { image, name, details, price, sizes, colors, category } = product; 
   const [index, setIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState(sizes[0].size);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
@@ -105,7 +106,9 @@ const ProductDetails = ({ product, products }) => {
               ))}
             </div>
           </div>
-
+          <div className="category">
+            <p><Link href={`/products?category=${category}`}>{category}</Link></p>
+          </div>
           <div className="quantity">
             <p className="price">{price}DT</p>
             <p className="quantity-desc">
@@ -155,7 +158,16 @@ const ProductDetails = ({ product, products }) => {
 };
 
 export const getServerSideProps = async ({ params: { slug } }) => {
-  const query = `*[_type == "product" && slug.current == '${slug}'][0]`;
+  const query = `*[_type == "product" && slug.current == '${slug}'][0]{
+    _id,
+    name,
+    details,
+    price,
+    sizes,
+    colors,
+    category, // Add this line
+    image
+  }`;
   const productsQuery = '*[_type == "product"]';
 
   const product = await client.fetch(query);
