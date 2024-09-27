@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
 import Link from "next/link";
 import {
   AiOutlineMinus,
@@ -12,8 +13,64 @@ import styled from "styled-components";
 
 import { useStateContext } from "../context/StateContext";
 import { urlFor } from "../lib/client";
-import getStripe from "../lib/getStripe";
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 30px; 
+  height: 30px;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+
+  @media (max-width: 768px) {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 6px;
+    font-size: 12px;
+  }
+`;
+
+const InputContainer = styled.div`
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  background-color: #f9f9f9;
+
+  @media (max-width: 768px) {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 10px;
+    margin: 10px 0;
+  }
+`;
 const CartWrapper = styled.div`
   width: 100vw;
   background: rgba(0, 0, 0, 0.5);
@@ -42,8 +99,36 @@ const CartContainer = styled.div`
   }
 `;
 
+const Modal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(${(props) => (props.isVisible ? 1 : 0.9)});
+  opacity: ${(props) => (props.isVisible ? 1 : 0)};
+  background: white;
+  padding: 40px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  @media (max-width: 768px) {
+    padding: 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+    width: 90%;
+  }
+`;
+
+
 const Cart = () => {
   const cartRef = useRef();
+  const [email, setEmail] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [isAnimating, setIsAnimating] = useState(false); // New state for animation
+
   const {
     totalPrice,
     totalQuantities,
@@ -52,26 +137,6 @@ const Cart = () => {
     toggleCartItemQuanitity,
     onRemove,
   } = useStateContext();
-
-  const handleCheckout = async () => {
-    const stripe = await getStripe();
-
-    const response = await fetch("/api/stripe", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(cartItems),
-    });
-
-    if (response.statusCode === 500) return;
-
-    const data = await response.json();
-
-    toast.loading("Redirecting...");
-
-    stripe.redirectToCheckout({ sessionId: data.id });
-  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -86,6 +151,100 @@ const Cart = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [setShowCart]);
+
+  const handleCheckout = () => {
+    setIsAnimating(true); // Start the animation
+    setIsModalOpen(true); // Open the modal
+  };
+  const handleCloseModal = () => {
+    setIsAnimating(false); // Start the closing animation
+    setTimeout(() => {
+      setIsModalOpen(false); // Close the modal after animation
+    }, 300); // Match this timeout with the duration of the transition
+  };
+
+  const handleContinue = async () => {
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    if (!phoneNumber) {
+      toast.error("Please enter your phone number");
+      return;
+    }
+
+    const orderDetails = cartItems
+      .map(
+        (item) => `
+      Name: ${item.name}
+      Size: ${item.size}
+      Quantity: ${item.quantity}
+      Price: ${item.price}DT
+      Image: ${urlFor(item.image[0])}
+      Phone Number: ${phoneNumber}
+    `
+      )
+      .join("\n");
+
+    const clientMessage = `
+      Order Confirmation
+      Thank you for your order we will send you a confirmation email shortly.
+    `;
+
+    const ownerMessage = `
+      New order
+  
+      Order Details:
+      ${orderDetails}
+  
+      Total Price: ${totalPrice}DT
+    `;
+
+    try {
+      const clientResponse = await axios.post("/api/sendEmail", {
+        email: email,
+        subject: "Order Confirmation",
+        message: clientMessage,
+      });
+
+      const ownerResponse = await axios.post("/api/sendEmail", {
+        email: "moezabdelkefi17@gmail.com",
+        subject: "New Order Received",
+        message: `Client Email: ${email}\n\n${ownerMessage}`,
+      });
+
+      if (clientResponse.status === 200 && ownerResponse.status === 200) {
+        toast.success("Email sent successfully");
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error(
+        "Error during checkout:",
+        error.response ? error.response.data : error.message
+      );
+      toast.error("Failed to send email");
+    }
+  };
+
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  const handlePhoneNumberChange = (e) => {
+    setPhoneNumber(e.target.value);
+  };
+
+  
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
 
   return (
     <CartWrapper ref={cartRef}>
@@ -179,6 +338,42 @@ const Cart = () => {
           </div>
         )}
       </CartContainer>
+
+      {isModalOpen && (
+        <Modal isVisible={isAnimating}>
+          <CloseButton
+            type="button"
+            onClick={handleCloseModal}
+          >
+            X
+          </CloseButton>
+          <h2>Enter your email and phone number</h2>
+          <InputContainer>
+
+          <StyledInput
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <div className="phone-number-input">
+
+            <StyledInput
+              type="text"
+              id="phoneNumber"
+              placeholder="Your Phone Number"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+            />
+          </div>
+          </InputContainer>
+
+          <button type="button" className="btn" onClick={handleContinue}>
+            Continue
+          </button>
+        </Modal>
+)}
+
     </CartWrapper>
   );
 };

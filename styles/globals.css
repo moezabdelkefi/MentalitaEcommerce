@@ -385,7 +385,6 @@ span.text-red {
   border-radius: 15px;
   border: none;
   font-size: 20px;
-  margin-top: 10px;
   margin-top: 40px;
   text-transform: uppercase;
   background-color: #000000;
@@ -393,9 +392,29 @@ span.text-red {
   cursor: pointer;
   transform: scale(1, 1);
   transition: transform 0.5s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
+
 .btn:hover {
   transform: scale(1.1, 1.1);
+}
+
+@media (max-width: 768px) {
+  .btn {
+    padding: 8px 10px;
+    font-size: 18px;
+    width: 220px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 6px 8px;
+    font-size: 16px;
+    width: 220px;
+  }
 }
 .product-detail-container {
   display: flex;
