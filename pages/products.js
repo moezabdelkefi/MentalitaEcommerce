@@ -230,19 +230,19 @@ const ProductsPage = ({ products, categories }) => {
   );
 };
 
-export const getStaticProps = async () => {
-  const productsQuery = `*[_type == "product"]`;
-  const products = await client.fetch(productsQuery);
+export const getServerSideProps = async () => {
+  const productsQuery = '*[_type == "product"]';
+  const categoriesQuery = '*[_type == "category"]';
 
-  const categoriesQuery = `*[_type == "product"]{category}`;
-  const categoriesData = await client.fetch(categoriesQuery);
-  const categories = [...new Set(categoriesData.map((item) => item.category))];
+  const products = await client.fetch(productsQuery);
+  const categories = await client.fetch(categoriesQuery);
 
   return {
-    props: { products, categories },
-    revalidate: 60, // Revalidate the page every 60 seconds
+    props: {
+      products,
+      categories: categories.map((category) => category.name),
+    },
   };
 };
-
 
 export default ProductsPage;
