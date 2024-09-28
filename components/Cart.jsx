@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import {
   AiOutlineMinus,
   AiOutlinePlus,
@@ -22,7 +23,7 @@ const CloseButton = styled.button`
   border: none;
   border-radius: 50%;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 30px; 
+  width: 30px;
   height: 30px;
   padding: 0;
   cursor: pointer;
@@ -103,13 +104,16 @@ const Modal = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(${(props) => (props.isVisible ? 1 : 0.9)});
+  transform: translate(-50%, -50%)
+    scale(${(props) => (props.isVisible ? 1 : 0.9)});
   opacity: ${(props) => (props.isVisible ? 1 : 0)};
   background: white;
   padding: 40px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 200;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
 
   @media (max-width: 768px) {
     padding: 30px;
@@ -121,19 +125,20 @@ const Modal = styled.div`
   }
 `;
 
-
 const Cart = () => {
+  const router = useRouter();
   const cartRef = useRef();
   const [email, setEmail] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState('');
-  const [isAnimating, setIsAnimating] = useState(false); // New state for animation
+  const [error, setError] = useState("");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const {
     totalPrice,
     totalQuantities,
     cartItems,
     setShowCart,
+    setCartItems,
     toggleCartItemQuanitity,
     onRemove,
   } = useStateContext();
@@ -153,14 +158,14 @@ const Cart = () => {
   }, [setShowCart]);
 
   const handleCheckout = () => {
-    setIsAnimating(true); // Start the animation
-    setIsModalOpen(true); // Open the modal
+    setIsAnimating(true);
+    setIsModalOpen(true);
   };
   const handleCloseModal = () => {
-    setIsAnimating(false); // Start the closing animation
+    setIsAnimating(false);
     setTimeout(() => {
-      setIsModalOpen(false); // Close the modal after animation
-    }, 300); // Match this timeout with the duration of the transition
+      setIsModalOpen(false);
+    }, 300);
   };
 
   const handleContinue = async () => {
@@ -183,13 +188,13 @@ const Cart = () => {
     const orderDetails = cartItems
       .map(
         (item) => `
-      Name: ${item.name}
-      Size: ${item.size}
-      Quantity: ${item.quantity}
-      Price: ${item.price}DT
-      Image: ${urlFor(item.image[0])}
-      Phone Number: ${phoneNumber}
-    `
+        Name: ${item.name}
+        Size: ${item.size}
+        Quantity: ${item.quantity}
+        Price: ${item.price}DT
+        Image: ${urlFor(item.image[0])}
+        Phone Number: ${phoneNumber}
+      `
       )
       .join("\n");
 
@@ -222,6 +227,13 @@ const Cart = () => {
 
       if (clientResponse.status === 200 && ownerResponse.status === 200) {
         toast.success("Email sent successfully");
+
+        setCartItems([]);
+
+        setShowCart(false);
+
+        router.push("/");
+
         setIsModalOpen(false);
       }
     } catch (error) {
@@ -239,8 +251,6 @@ const Cart = () => {
     setPhoneNumber(e.target.value);
   };
 
-  
-
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -256,7 +266,9 @@ const Cart = () => {
         >
           <AiOutlineLeft />
           <span className="heading">Your Cart</span>
-          <span className="cart-num-items">({totalQuantities} items)</span>
+          <span className="cart-num-items">
+            ({cartItems.length} {cartItems.length === 1 ? "item" : "items"})
+          </span>
         </button>
 
         {cartItems.length < 1 && (
@@ -341,39 +353,33 @@ const Cart = () => {
 
       {isModalOpen && (
         <Modal isVisible={isAnimating}>
-          <CloseButton
-            type="button"
-            onClick={handleCloseModal}
-          >
+          <CloseButton type="button" onClick={handleCloseModal}>
             X
           </CloseButton>
           <h2>Enter your email and phone number</h2>
           <InputContainer>
-
-          <StyledInput
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <div className="phone-number-input">
-
             <StyledInput
-              type="text"
-              id="phoneNumber"
-              placeholder="Your Phone Number"
-              value={phoneNumber}
-              onChange={handlePhoneNumberChange}
+              type="email"
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          </div>
+            <div className="phone-number-input">
+              <StyledInput
+                type="text"
+                id="phoneNumber"
+                placeholder="Your Phone Number"
+                value={phoneNumber}
+                onChange={handlePhoneNumberChange}
+              />
+            </div>
           </InputContainer>
 
           <button type="button" className="btn" onClick={handleContinue}>
             Continue
           </button>
         </Modal>
-)}
-
+      )}
     </CartWrapper>
   );
 };

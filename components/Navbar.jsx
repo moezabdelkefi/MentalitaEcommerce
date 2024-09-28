@@ -5,11 +5,22 @@ import { useStateContext } from "../context/StateContext";
 import { client, urlFor } from "../lib/client";
 
 const Navbar = () => {
-  const { showCart, setShowCart, totalQuantities } = useStateContext();
+  const {
+    showCart,
+    setShowCart,
+    totalQuantities,
+    cartItems,
+    setTotalQuantities,
+  } = useStateContext();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const searchFormRef = useRef(null);
+
+  useEffect(() => {
+    const total = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+    setTotalQuantities(total);
+  }, [cartItems]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -78,7 +89,7 @@ const Navbar = () => {
               <form
                 className="search-form"
                 onSubmit={handleSearch}
-                ref={searchFormRef}
+                ref={searchFormRef} 
               >
                 <input
                   type="text"
