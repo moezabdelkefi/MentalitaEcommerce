@@ -161,6 +161,7 @@ export const getServerSideProps = async ({ params: { slug } }) => {
   const query = `*[_type == "product" && slug.current == '${slug}'][0]{
     _id,
     name,
+    title, // Add this line
     details,
     price,
     sizes,
