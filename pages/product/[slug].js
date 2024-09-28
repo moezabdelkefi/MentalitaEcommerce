@@ -161,24 +161,20 @@ export const getServerSideProps = async ({ params: { slug } }) => {
   const query = `*[_type == "product" && slug.current == '${slug}'][0]{
     _id,
     name,
-    title, // Add this line
     details,
     price,
     sizes,
     colors,
-    category,
+    category, // Add this line
     image
   }`;
-  const productsQuery = `*[_type == "product"]`;
-  const categoriesQuery = `*[_type == "product"]{category}`;
+  const productsQuery = '*[_type == "product"]';
 
   const product = await client.fetch(query);
   const products = await client.fetch(productsQuery);
-  const categoriesData = await client.fetch(categoriesQuery);
-  const categories = [...new Set(categoriesData.map((item) => item.category))];
 
   return {
-    props: { products, product, categories },
+    props: { products, product },
   };
 };
 

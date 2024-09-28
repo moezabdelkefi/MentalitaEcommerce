@@ -230,16 +230,24 @@ const ProductsPage = ({ products, categories }) => {
   );
 };
 
-export const getStaticProps = async () => {
-  const productsQuery = `*[_type == "product"]`;
+export const getServerSideProps = async () => {
+  const query = `*[_type == "product"{
+    _id,
+    name,
+    details,
+    price,
+    sizes,
+    colors,
+    category, // Add this line
+    image
+  }`;
+  const productsQuery = '*[_type == "product"]';
+
+  const product = await client.fetch(query);
   const products = await client.fetch(productsQuery);
 
-  const categoriesQuery = `*[_type == "product"]{category}`;
-  const categoriesData = await client.fetch(categoriesQuery);
-  const categories = [...new Set(categoriesData.map((item) => item.category))];
-
   return {
-    props: { products, categories },
+    props: { products, product },
   };
 };
 
